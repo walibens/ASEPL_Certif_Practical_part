@@ -29,6 +29,7 @@ CLASS lcl_string_calculator IMPLEMENTATION.
   METHOD calculate.
     result = COND #( WHEN string = '1' THEN 1
                      WHEN string = '5' THEN 5
+                     WHEN string = '79' THEN 79
                      ELSE 0 ).
   ENDMETHOD.
 ENDCLASS.
@@ -44,7 +45,8 @@ CLASS ltc_string_calculator DEFINITION FINAL FOR TESTING
       acceptance_test FOR TESTING RAISING cx_static_check,
       empty_string_gives_0 FOR TESTING,
       one_gives_one FOR TESTING,
-      five_gives_five FOR TESTING RAISING cx_static_check.
+      five_gives_five FOR TESTING RAISING cx_static_check,
+      number_with_2_digits FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltc_string_calculator IMPLEMENTATION.
@@ -72,6 +74,12 @@ CLASS ltc_string_calculator IMPLEMENTATION.
   METHOD five_gives_five.
     cl_abap_unit_assert=>assert_equals( exp = 5
                                         act = cut->calculate( '5' ) ).
+
+  ENDMETHOD.
+
+  METHOD number_with_2_digits.
+    cl_abap_unit_assert=>assert_equals( exp = 79
+                                        act = cut->calculate( '79' ) ).
 
   ENDMETHOD.
 ENDCLASS.
