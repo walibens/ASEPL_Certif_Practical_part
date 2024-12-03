@@ -4,8 +4,8 @@
 "- Acceptance 1,2;3#4 gives 10
 "+ emtpy string give 0
 "+ simple number : 1 gives 1, 5 give 5
-"2 number with 2 digits
-"- double number : 1,2 gives 3
+"+ number with 2 digits
+"+ double number : 1,2 gives 3
 "- triple number : 1,2,3 gives 6
 "- different separator : and / and #
 
@@ -28,14 +28,11 @@ ENDCLASS.
 CLASS lcl_string_calculator IMPLEMENTATION.
   METHOD calculate.
     DATA lt_numbers TYPE string_table.
-    IF string CO '0123456789'.
-      result = string.
-    ELSE.
-      SPLIT string AT ',' INTO TABLE lt_numbers.
-      LOOP AT lt_numbers INTO DATA(number).
-        result += number.
-      ENDLOOP.
-    ENDIF.
+
+    SPLIT string AT ',' INTO TABLE lt_numbers.
+    LOOP AT lt_numbers INTO DATA(number).
+      result += number.
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.
