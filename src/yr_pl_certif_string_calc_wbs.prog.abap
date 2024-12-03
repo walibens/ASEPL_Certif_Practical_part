@@ -29,7 +29,7 @@ CLASS lcl_string_calculator IMPLEMENTATION.
 
 
   METHOD add.
-    result = 1.
+      result = cond #( when string = '1' then 1 else 0 ).
   ENDMETHOD.
 
 ENDCLASS.
