@@ -9,7 +9,8 @@
 "+ triple number : 1,2,3 gives 6
 "+ unknown numbers
 "+ different separator : and / and #
-"- any specific character
+"+ any specific character
+"- letters separator
 
 REPORT yr_pl_certif_string_calc_wbs.
 
@@ -32,7 +33,7 @@ CLASS lcl_string_calculator IMPLEMENTATION.
     DATA lt_numbers TYPE string_table.
 
     DATA(input) = string.
-    REPLACE ALL OCCURRENCES OF REGEX '[\/#]' IN input WITH ','.
+    REPLACE ALL OCCURRENCES OF REGEX '[\/#;]' IN input WITH ','.
 
     SPLIT input AT ',' INTO TABLE lt_numbers.
     LOOP AT lt_numbers INTO DATA(number).
@@ -59,7 +60,8 @@ CLASS ltc_string_calculator DEFINITION FINAL FOR TESTING
       one_two_three_gives_6 FOR TESTING RAISING cx_static_check,
       unknown_numbers FOR TESTING RAISING cx_static_check,
       slash_separator FOR TESTING RAISING cx_static_check,
-    dash_separator FOR TESTING RAISING cx_static_check.
+      dash_separator FOR TESTING RAISING cx_static_check,
+      any_separator FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltc_string_calculator IMPLEMENTATION.
@@ -117,5 +119,9 @@ CLASS ltc_string_calculator IMPLEMENTATION.
 
   METHOD dash_separator.
     cl_abap_unit_assert=>assert_equals( exp = 10 act = cut->calculate( '1#2#3/4' ) ).
+  ENDMETHOD.
+
+  METHOD any_separator.
+    cl_abap_unit_assert=>assert_equals( exp = 10 act = cut->calculate( '1##2;3//4' ) ).
   ENDMETHOD.
 ENDCLASS.
