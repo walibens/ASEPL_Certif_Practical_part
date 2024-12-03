@@ -25,6 +25,10 @@ CLASS lcl_string_calculator DEFINITION FINAL.
   PROTECTED SECTION.
 
   PRIVATE SECTION.
+    CONSTANTS separator TYPE string VALUE '+'.
+    METHODS addition
+      IMPORTING numbers       TYPE string_table
+      RETURNING VALUE(result) TYPE i.
 
 ENDCLASS.
 
@@ -33,14 +37,17 @@ CLASS lcl_string_calculator IMPLEMENTATION.
     DATA lt_numbers TYPE string_table.
 
     DATA(input) = string.
-    REPLACE ALL OCCURRENCES OF REGEX '[\/#;]' IN input WITH ','.
+    REPLACE ALL OCCURRENCES OF REGEX '\D' IN input WITH separator.
 
-    SPLIT input AT ',' INTO TABLE lt_numbers.
-    LOOP AT lt_numbers INTO DATA(number).
+    SPLIT input AT separator INTO TABLE lt_numbers.
+    result = addition( lt_numbers ).
+  ENDMETHOD.
+
+  METHOD addition.
+    LOOP AT numbers INTO DATA(number).
       result += number.
     ENDLOOP.
   ENDMETHOD.
-
 ENDCLASS.
 
 CLASS ltc_string_calculator DEFINITION FINAL FOR TESTING
@@ -61,7 +68,8 @@ CLASS ltc_string_calculator DEFINITION FINAL FOR TESTING
       unknown_numbers FOR TESTING RAISING cx_static_check,
       slash_separator FOR TESTING RAISING cx_static_check,
       dash_separator FOR TESTING RAISING cx_static_check,
-      any_separator FOR TESTING RAISING cx_static_check.
+      any_separator FOR TESTING RAISING cx_static_check,
+      letters_separator FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltc_string_calculator IMPLEMENTATION.
@@ -123,5 +131,9 @@ CLASS ltc_string_calculator IMPLEMENTATION.
 
   METHOD any_separator.
     cl_abap_unit_assert=>assert_equals( exp = 10 act = cut->calculate( '1##2;3//4' ) ).
+  ENDMETHOD.
+
+  METHOD letters_separator.
+    cl_abap_unit_assert=>assert_equals( exp = 10 act = cut->calculate( '1sep2sep3//4' ) ).
   ENDMETHOD.
 ENDCLASS.
