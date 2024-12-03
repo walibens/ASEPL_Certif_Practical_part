@@ -6,8 +6,10 @@
 "+ simple number : 1 gives 1, 5 give 5
 "+ number with 2 digits
 "+ double number : 1,2 gives 3
-"- triple number : 1,2,3 gives 6
-"- different separator : and / and #
+"+ triple number : 1,2,3 gives 6
+"+ unknown numbers
+"+ different separator : and / and #
+"- any specific character
 
 REPORT yr_pl_certif_string_calc_wbs.
 
@@ -29,7 +31,10 @@ CLASS lcl_string_calculator IMPLEMENTATION.
   METHOD calculate.
     DATA lt_numbers TYPE string_table.
 
-    SPLIT string AT ',' INTO TABLE lt_numbers.
+    DATA(input) = string.
+    REPLACE ALL OCCURRENCES OF REGEX '[\/#]' IN input WITH ','.
+
+    SPLIT input AT ',' INTO TABLE lt_numbers.
     LOOP AT lt_numbers INTO DATA(number).
       result += number.
     ENDLOOP.
@@ -50,7 +55,11 @@ CLASS ltc_string_calculator DEFINITION FINAL FOR TESTING
       one_gives_one FOR TESTING,
       five_gives_five FOR TESTING RAISING cx_static_check,
       number_with_2_digits FOR TESTING RAISING cx_static_check,
-      one_coma_two_gives_3 FOR TESTING RAISING cx_static_check.
+      one_coma_two_gives_3 FOR TESTING RAISING cx_static_check,
+      one_two_three_gives_6 FOR TESTING RAISING cx_static_check,
+      unknown_numbers FOR TESTING RAISING cx_static_check,
+      slash_separator FOR TESTING RAISING cx_static_check,
+    dash_separator FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS ltc_string_calculator IMPLEMENTATION.
@@ -90,5 +99,23 @@ CLASS ltc_string_calculator IMPLEMENTATION.
   METHOD one_coma_two_gives_3.
     cl_abap_unit_assert=>assert_equals( exp = 3 act = cut->calculate( '1,2' ) ).
 
+  ENDMETHOD.
+
+  METHOD one_two_three_gives_6.
+    cl_abap_unit_assert=>assert_equals( exp = 6 act = cut->calculate( '1,2,3' ) ).
+
+  ENDMETHOD.
+
+  METHOD unknown_numbers.
+    cl_abap_unit_assert=>assert_equals( exp = 28 act = cut->calculate( '1,2,3,4,5,6,7' ) ).
+
+  ENDMETHOD.
+
+  METHOD slash_separator.
+    cl_abap_unit_assert=>assert_equals( exp = 10 act = cut->calculate( '1,2,3/4' ) ).
+  ENDMETHOD.
+
+  METHOD dash_separator.
+    cl_abap_unit_assert=>assert_equals( exp = 10 act = cut->calculate( '1#2#3/4' ) ).
   ENDMETHOD.
 ENDCLASS.
