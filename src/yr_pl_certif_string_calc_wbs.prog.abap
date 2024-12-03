@@ -29,7 +29,7 @@ CLASS lcl_string_calculator IMPLEMENTATION.
 
 
   METHOD add.
-
+    result = 1.
   ENDMETHOD.
 
 ENDCLASS.
@@ -44,7 +44,9 @@ CLASS ltc_string_calculator DEFINITION FINAL FOR TESTING
     DATA cut TYPE REF TO lcl_string_calculator.
     METHODS:
       setup,
-      acceptance_test FOR TESTING RAISING cx_static_check.
+      acceptance_test FOR TESTING RAISING cx_static_check,
+      empty_string_gives_0 FOR TESTING,
+      one_gives_one FOR TESTING.
 ENDCLASS.
 
 CLASS ltc_string_calculator IMPLEMENTATION.
@@ -56,4 +58,16 @@ CLASS ltc_string_calculator IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 10
                                         act = cut->add( '1,2;3#4' ) ).
   ENDMETHOD.
+  METHOD empty_string_gives_0.
+    cl_abap_unit_assert=>assert_equals( exp = 0
+                                        act = cut->add( '' ) ).
+
+  ENDMETHOD.
+
+  METHOD one_gives_one.
+    cl_abap_unit_assert=>assert_equals( exp = 1
+                                        act = cut->add( '1' ) ).
+
+  ENDMETHOD.
+
 ENDCLASS.
